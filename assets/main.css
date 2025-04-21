@@ -921,7 +921,7 @@ video {
 .hero-section {
   position: relative;
   height: 80vh;  /* Adjust height as needed */
-  min-height: 500px;
+  /* min-height: 500px; */
   overflow: hidden;
   display: flex;
   align-items: center;
