@@ -1,9 +1,6 @@
 module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.rs",
-    "./**/*.html"
-  ],
+  mode: "all",
+  content: ["./src/**/*.{rs,html,css}", "./dist/**/*.html"],
   theme: {
     extend: {},
   },
