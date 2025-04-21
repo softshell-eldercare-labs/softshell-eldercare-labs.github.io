@@ -15,6 +15,7 @@ enum Route {
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 pub const PROFILE_PIC: Asset = asset!("/assets/1152300.png");
+pub const WALLPAPER: Asset = asset!("/assets/wallpaper.mp4");
 
 fn main() {
     dioxus_logger::init(Level::INFO).expect("failed to init logger");
@@ -49,7 +50,6 @@ fn Home() -> Element {
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
 
-
     
         div {
             class: "min-h-screen bg-gray-50",
@@ -60,17 +60,45 @@ fn Home() -> Element {
                 
                 // Hero section with company name
                 section {
-                    class: "text-center mb-16",
-                    h1 {
-                        class: "text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl",
-                        "SoftShell Elder Care"
+                    class: "hero-section",  // Fixed height container
+                    
+
+                    video {
+                        class: "video-background",  // Covers entire section with slight 
+                        autoplay: true,
+                        controls: false,
+                        // controls: Bool DEFAULT,
+                        // crossorigin: CrossOrigin DEFAULT,
+                        loop: "loop",
+                        // muted: Bool DEFAULT,
+                        preload: true,
+                        playsinline: true,
+                        // poster: Uri DEFAULT,
+                        src: WALLPAPER,
+                        // width: usize DEFAULT,
+                        // style: "max-height: 80vh;"  // Limits video height to 80% of 
                     }
-                    p {
-                        class: "mt-5 max-w-xl mx-auto text-xl text-gray-500",
-                        "To ensure elderly patients receive timely, accurate, and attentive hospital care through dedicated advocacy."
+  
+                    div {
+                        class: "video-overlay",
+                    }
+
+
+                    // Content container with relative positioning
+                    div {
+                        class: "video-content-overlay",
+                        
+                        h1 {
+                            class: "text-4xl font-extrabold sm:text-5xl sm:tracking-tight lg:text-6xl drop-shadow-lg",
+                            "Soft Shell Elder Care"
+                        }
+                        p {
+                            class: "mt-5 max-w-xl mx-auto text-xl drop-shadow-lg",
+                            "Ensuring elderly patients receive timely, accurate, and attentive hospital care through dedicated advocacy."
+                        }
                     }
                 }
-                
+                br {}
                 // Mission section
                 section {
                     class: "mb-16",
