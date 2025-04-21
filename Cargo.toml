@@ -1,12 +1,11 @@
 [package]
-name = "softshell-eldercare"
+name = "softshell-eldercare-labs"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 dioxus = { version = "0.6.1", features = ["router"] }
 dioxus-logger = { version = "0.6.1" }
-pulldown-cmark = "0.12.2"
 serde = { version = "1.0.217", features = ["derive"] }
 toml = "0.8.19"
 include_dir = "0.7.3"
