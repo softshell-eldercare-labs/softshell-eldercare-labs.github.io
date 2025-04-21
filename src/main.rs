@@ -23,7 +23,7 @@ fn main() {
 
 fn App() -> Element {
     rsx! {
-        document::Title { "SoftShell Elder Care" }
+        document::Title { "SoftShell ElderCare" }
         document::Link { rel: "stylesheet", href: MAIN_CSS }
 
         document::Link {
