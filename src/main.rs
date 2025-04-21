@@ -71,7 +71,7 @@ fn Home() -> Element {
                         controls: false,
                         // controls: Bool DEFAULT,
                         crossorigin: "anonymous",
-                        r#loop: "loop",
+                        r#loop: true,
                         // muted: true,
                         preload: false,
                         playsinline: true,
