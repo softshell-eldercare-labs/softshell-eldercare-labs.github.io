@@ -12,6 +12,18 @@ include_dir = "0.7.3"
 dioxus-motion = { version = "0.2.2", default-features = false, optional = true }
 easer = { version = "0.3.0", default-features = false }
 
+js-sys = "0.3.77"
+web-sys = {version = "0.3.77", features = [
+    "HtmlElement",
+    "Window",
+    "Document",
+    "Element",
+    "Range",
+    "Selection",
+    "Blob", "Url", "HtmlAnchorElement", "HtmlVideoElement"
+    ]}
+
+
 [features]
 default = ["web"]
 web = ["dioxus/web", "dioxus-motion/web"]

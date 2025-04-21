@@ -3815,8 +3815,10 @@ dependencies = [
  "dioxus-motion",
  "easer",
  "include_dir",
+ "js-sys",
  "serde",
  "toml",
+ "web-sys",
 ]
 
 [[package]]

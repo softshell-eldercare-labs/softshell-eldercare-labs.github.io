@@ -1,9 +1,9 @@
 #![allow(non_snake_case)]
 
 // use components::{NavBar, Profile, ProjectGrid, WorkExperience, DeepDiveBlogList};
-use dioxus::prelude::*;
+use dioxus::{prelude::*, web::WebEventExt};
 use dioxus_logger::tracing::Level;
-
+use web_sys::wasm_bindgen::JsCast;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -47,16 +47,18 @@ pub static PROFILE_ELEMENT: GlobalSignal<
 // Home component - Main landing page container
 #[component]
 fn Home() -> Element {
+
+    let mut video_ref = use_signal(|| None::<web_sys::HtmlVideoElement>);
+
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
 
     
         div {
-            class: "min-h-screen bg-gray-50",
+            // class: "min-h-screen bg-gray-50",
             
             // Main content
-            main {
-                class: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12",
+
                 
                 // Hero section with company name
                 section {
@@ -68,15 +70,13 @@ fn Home() -> Element {
                         autoplay: true,
                         controls: false,
                         // controls: Bool DEFAULT,
-                        // crossorigin: CrossOrigin DEFAULT,
+                        crossorigin: "anonymous",
                         r#loop: "loop",
-                        // muted: Bool DEFAULT,
-                        preload: "preload",
+                        // muted: true,
+                        preload: false,
                         playsinline: true,
                         // poster: Uri DEFAULT,
-                        src: WALLPAPER,
-                        // width: usize DEFAULT,
-                        // style: "max-height: 80vh;"  // Limits video height to 80% of 
+                        src: WALLPAPER,                 
                     }
   
                     div {
@@ -99,6 +99,8 @@ fn Home() -> Element {
                     }
                 }
                 br {}
+                main {
+                    class: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12",
                 // Mission section
                 section {
                     class: "mb-16",
