@@ -9,17 +9,17 @@
     <!-- Favicon -->
     <link rel="manifest" href="/assets/site.webmanifest">
 
-    <link rel="preload" href="/./wasm/softshell-eldercare_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
-    <link rel="preload" href="/./wasm/softshell-eldercare.js" as="script">
+    <link rel="preload" href="/./wasm/softshell-eldercare-labs_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
+    <link rel="preload" href="/./wasm/softshell-eldercare-labs.js" as="script">
 </head>
 
 <body>
     <div id="main"></div>
     <script>
         // We can't use a module script here because we need to start the script immediately when streaming
-        import("/./wasm/softshell-eldercare.js").then(
+        import("/./wasm/softshell-eldercare-labs.js").then(
             ({ default: init }) => {
-                init("/./wasm/softshell-eldercare_bg.wasm").then((wasm) => {
+                init("/./wasm/softshell-eldercare-labs_bg.wasm").then((wasm) => {
                     if (wasm.__wbindgen_start == undefined) {
                         wasm.main();
                     }
