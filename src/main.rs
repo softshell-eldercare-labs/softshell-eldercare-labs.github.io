@@ -2,7 +2,7 @@
 
 // use components::{NavBar, Profile, ProjectGrid, WorkExperience, DeepDiveBlogList};
 use dioxus::{prelude::*, web::WebEventExt};
-use dioxus_logger::tracing::Level;
+use dioxus_logger::tracing::info;
 use web_sys::wasm_bindgen::JsCast;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -18,7 +18,7 @@ pub const PROFILE_PIC: Asset = asset!("/assets/1152300.png");
 pub const WALLPAPER: Asset = asset!("/assets/wallpaper.mp4");
 
 fn main() {
-    dioxus_logger::init(Level::INFO).expect("failed to init logger");
+    // dioxus_logger::init(Level::INFO).expect("failed to init logger");
     dioxus::launch(App);
 }
 
@@ -48,7 +48,46 @@ pub static PROFILE_ELEMENT: GlobalSignal<
 #[component]
 fn Home() -> Element {
 
-    let mut video_ref = use_signal(|| None::<web_sys::HtmlVideoElement>);
+    let mut video_ref = use_signal(|| None::<dioxus::prelude::Event<dioxus::events::MountedData>>);
+    let mut is_video_loaded = use_signal(|| false);
+    let mut count = use_signal(|| 0);
+
+    let tmp = use_resource(move ||  {
+        let is_loaded = *is_video_loaded.read();
+        async move  {
+            
+            if is_loaded {
+                let js_code = format!(
+                    r#"
+                    try {{
+                        const video = document.getElementById('vbackground');
+                        if (video) {{
+                            video.muted = true;
+                            const playPromise = video.play();
+                            if (playPromise !== undefined) {{
+                                playPromise.catch(error => {{
+                                    // Fallback to muted if unmuted play failed
+                                    video.muted = true;
+                                    video.play();
+                                }});
+                            }}
+                        }}
+                    }} catch (e) {{
+                        console.error('Video autoplay error:', e);
+                    }}
+                    "#
+                );
+    
+                match document::eval(&js_code).await {
+                    Ok(_) => info!("Video autoplay initiated"),
+                    Err(e) => info!("JS eval error: {:?}", e),
+                }
+            }
+          
+        
+        }
+    }
+    );
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
@@ -66,17 +105,21 @@ fn Home() -> Element {
                     
 
                     video {
+                        id: "vbackground",
                         class: "video-background",  // Covers entire section with slight 
                         autoplay: true,
                         controls: false,
                         // controls: Bool DEFAULT,
-                        crossorigin: "anonymous",
+                        // crossorigin: "anonymous",
                         r#loop: true,
+                        autofocus: true,
                         // muted: true,
                         preload: false,
-                        playsinline: true,
+                        playsinline: false,
                         // poster: Uri DEFAULT,
-                        src: WALLPAPER,                 
+                        src: WALLPAPER,    
+                        oncanplay: move |_| is_video_loaded.set(true),
+                        
                     }
   
                     div {
