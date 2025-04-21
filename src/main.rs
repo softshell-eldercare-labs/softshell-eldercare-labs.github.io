@@ -30,7 +30,6 @@ fn App() -> Element {
             rel: "stylesheet",
             href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
         }
-        
         // document::Link {
         //     rel: "stylesheet",
         //     href: TAILWIND_CSS,
@@ -47,7 +46,6 @@ pub static PROFILE_ELEMENT: GlobalSignal<
 // Home component - Main landing page container
 #[component]
 fn Home() -> Element {
-    let css = MAIN_CSS.to_string();
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
 
@@ -55,24 +53,6 @@ fn Home() -> Element {
     
         div {
             class: "min-h-screen bg-gray-50",
-            
-            // Navigation
-            // nav {
-            //     class: "bg-white shadow-sm",
-            //     div {
-            //         class: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-            //         div {
-            //             class: "flex justify-between h-16",
-            //             div {
-            //                 class: "flex items-center",
-            //                 div {
-            //                     class: "text-xl font-bold text-indigo-600",
-            //                     "SoftShell Elder Care"
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
             
             // Main content
             main {
