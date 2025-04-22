@@ -97,7 +97,8 @@ fn Home() -> Element {
             // class: "min-h-screen bg-gray-50",
             
             // Main content
-
+            main {
+                class: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12",
                 
                 // Hero section with company name
                 section {
@@ -107,17 +108,19 @@ fn Home() -> Element {
                     video {
                         id: "vbackground",
                         class: "video-background",  // Covers entire section with slight 
-                        autoplay: false,
-                        controls: false,
+                        // autoplay: false,
+                        // controls: false,
                         // controls: Bool DEFAULT,
-                        // crossorigin: "anonymous",
+                        crossorigin: "anonymous",
                         r#loop: true,
                         // muted: true,
-                        preload: false,
+                        preload: "auto",
                         playsinline: false,
                         // poster: Uri DEFAULT,
                         src: WALLPAPER,    
                         oncanplay: move |_| is_video_loaded.set(true),
+                        onstalled: move |_| is_video_loaded.set(false),
+                        onsuspend: move |_| is_video_loaded.set(false),
                         
                     }
   
@@ -141,8 +144,7 @@ fn Home() -> Element {
                     }
                 }
                 br {}
-                main {
-                    class: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12",
+
                 // Mission section
                 section {
                     class: "mb-16",
