@@ -77,6 +77,7 @@ fn Home() -> Element {
                             video.muted = true;
                             if (browser_name.includes('Safari') || os_name.includes('iOS') || os_name.includes('MacOS')) {{
                                 video.setAttribute('playsinline', 'true');
+                                video.setAttribute('disablepictureinpicture', 'true');
                             }}
                             const playPromise = video.play();
                             if (playPromise !== undefined) {{
