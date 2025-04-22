@@ -17,7 +17,8 @@ enum Route {
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 pub const PROFILE_PIC: Asset = asset!("/assets/1152300.png");
-pub const WALLPAPER: Asset = asset!("/assets/wallpaper.mp4");
+pub const POSTER: Asset = asset!("/assets/poster.png");
+pub const WALLPAPER: Asset = asset!("/assets/wallpaper-video.mp4");
 
 fn main() {
     // dioxus_logger::init(Level::INFO).expect("failed to init logger");
@@ -243,7 +244,7 @@ fn Home() -> Element {
                         r#loop: true,
                         muted: true,
                         preload: "auto",
-                        // poster: Uri DEFAULT,
+                        poster: POSTER,
                         // Safari-specific attributes
                         src: WALLPAPER,    
                         onmounted: browser_settings,
