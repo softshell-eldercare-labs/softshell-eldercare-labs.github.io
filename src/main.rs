@@ -45,6 +45,7 @@ pub static PROFILE_ELEMENT: GlobalSignal<
 > = Global::new(|| None);
 
 // Home component - Main landing page container
+
 #[component]
 fn Home() -> Element {
 
@@ -63,8 +64,8 @@ fn Home() -> Element {
                         const video = document.getElementById('vbackground');
                         
                         if (video) {{
-                            video.setAttribute('playsinline', '');
-                            video.setAttribute('webkit-playsinline', '');
+                            video.setAttribute('playsinline', 'true');
+                            video.setAttribute('webkit-playsinline', 'allow');
                             video.muted = true;
                             const playPromise = video.play();
                             if (playPromise !== undefined) {{
@@ -91,6 +92,41 @@ fn Home() -> Element {
         }
     }
     );
+    
+    let safari_settings = move |_| {
+
+        async move  {
+            
+        let js_code = r#"
+            // Enhanced Safari detection
+            function isSafari() {
+                const ua = navigator.userAgent;
+                const isIOS = /iPad|iPhone|iPod/.test(ua);
+                const isMacSafari = /Macintosh.*Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua);
+                const isNewIPad = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+                return isIOS || isMacSafari || isNewIPad;
+            }
+
+            const video = this;
+            if (isSafari()) {
+                // Set all required attributes for Safari
+                video.playsInline = true;
+                video.webkitPlaysInline = true;
+                video.setAttribute('playsinline', 'true');
+                video.setAttribute('webkit-playsinline', 'true');
+                video.setAttribute('x-webkit-airplay', 'allow');
+            }
+        "#;
+        
+        match document::eval(&js_code).await {
+            Ok(_) => info!("Video autoplay initiated"),
+            Err(e) => info!("JS eval error: {:?}", e),
+        }
+
+        }
+
+
+    };
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
@@ -118,10 +154,10 @@ fn Home() -> Element {
                         r#loop: true,
                         muted: true,
                         preload: "auto",
-                        // playsinline: false,
                         // poster: Uri DEFAULT,
                         // Safari-specific attributes
                         src: WALLPAPER,    
+                        onmounted: safari_settings,
                         oncanplay: move |_| is_video_loaded.set(true),
                         onstalled: move |_| is_video_loaded.set(false),
                         onsuspend: move |_| is_video_loaded.set(false),
