@@ -107,12 +107,11 @@ fn Home() -> Element {
                     video {
                         id: "vbackground",
                         class: "video-background",  // Covers entire section with slight 
-                        autoplay: true,
+                        autoplay: false,
                         controls: false,
                         // controls: Bool DEFAULT,
                         // crossorigin: "anonymous",
                         r#loop: true,
-                        autofocus: true,
                         // muted: true,
                         preload: false,
                         playsinline: false,
