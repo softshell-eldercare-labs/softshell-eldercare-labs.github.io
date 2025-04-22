@@ -61,7 +61,10 @@ fn Home() -> Element {
                     r#"
                     try {{
                         const video = document.getElementById('vbackground');
+                        
                         if (video) {{
+                            video.setAttribute('playsinline', '');
+                            video.setAttribute('webkit-playsinline', '');
                             video.muted = true;
                             const playPromise = video.play();
                             if (playPromise !== undefined) {{
@@ -113,10 +116,11 @@ fn Home() -> Element {
                         // controls: Bool DEFAULT,
                         crossorigin: "anonymous",
                         r#loop: true,
-                        // muted: true,
+                        muted: true,
                         preload: "auto",
-                        playsinline: false,
+                        // playsinline: false,
                         // poster: Uri DEFAULT,
+                        // Safari-specific attributes
                         src: WALLPAPER,    
                         oncanplay: move |_| is_video_loaded.set(true),
                         onstalled: move |_| is_video_loaded.set(false),
