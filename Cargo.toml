@@ -4,29 +4,30 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-dioxus = { version = "0.6.1", features = ["router"] }
+dioxus = { version = "0.6.3", features = ["router"] }
 dioxus-logger = { version = "0.6.1" }
 serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.138"
 toml = "0.8.19"
 include_dir = "0.7.3"
 dioxus-motion = { version = "0.2.2", default-features = false, optional = true }
-easer = { version = "0.3.0", default-features = false }
+# easer = { version = "0.3.0", default-features = false }
 
-js-sys = "0.3.77"
-web-sys = {version = "0.3.77", features = [
-    "HtmlElement",
-    "Window",
-    "Document",
-    "Element",
-    "Range",
-    "Selection",
-    "Blob", "Url", "HtmlAnchorElement", "HtmlVideoElement"
-    ]}
+# js-sys = "0.3.77"
+# web-sys = {version = "0.3.77", features = [
+#     "HtmlElement",
+#     "Window",
+#     "Document",
+#     "Element",
+#     "Range",
+#     "Selection",
+#     "Blob", "Url", "HtmlAnchorElement", "HtmlVideoElement"
+#     ]}
 
 
 [features]
 default = ["web"]
-web = ["dioxus/web", "dioxus-motion/web"]
+web = ["dioxus/web"]
 desktop = ["dioxus/desktop", "dioxus-motion/desktop"]
 mobile = ["dioxus/mobile", "dioxus-motion/desktop"]
 
@@ -39,11 +40,7 @@ lto = "thin"
 panic = "unwind"
 codegen-units = 32
 
-[profile.release]
-opt-level = "z"    # Optimize for size.
-lto = true         # Enable link-time optimization.
-codegen-units = 32 #Parallelize codegen across 1 cores
-strip = true       # Automatically strip symbols from the binary.
+
 
 [profile.wasm-dev]
 inherits = "dev"

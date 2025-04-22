@@ -3,7 +3,9 @@
 // use components::{NavBar, Profile, ProjectGrid, WorkExperience, DeepDiveBlogList};
 use dioxus::{prelude::*, web::WebEventExt};
 use dioxus_logger::tracing::info;
-use web_sys::wasm_bindgen::JsCast;
+// use web_sys::wasm_bindgen::JsCast;
+use std::collections::HashMap;
+use serde_json::{Value};
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -52,34 +54,50 @@ fn Home() -> Element {
     let mut video_ref = use_signal(|| None::<dioxus::prelude::Event<dioxus::events::MountedData>>);
     let mut is_video_loaded = use_signal(|| false);
     let mut count = use_signal(|| 0);
+    let mut browser_signal = use_signal(|| String::new());
+    let mut os_signal = use_signal(|| String::new()); 
 
     let tmp = use_resource(move ||  {
         let is_loaded = *is_video_loaded.read();
+        let browser = browser_signal.read().clone();
+        let os = os_signal.read().clone();
         async move  {
             
             if is_loaded {
                 let js_code = format!(
                     r#"
+                    const browser_name = `{}`;
+                    const os_name = `{}`;
+  
                     try {{
                         const video = document.getElementById('vbackground');
-                        
                         if (video) {{
-                            video.setAttribute('playsinline', 'true');
-                            video.setAttribute('webkit-playsinline', 'allow');
+                            // Ensure muted and playsinline for Safari
                             video.muted = true;
+                            if (browser_name.includes('Safari') || os_name.includes('iOS') || os_name.includes('MacOS')) {{
+                                video.setAttribute('playsinline', 'true');
+                            }}
                             const playPromise = video.play();
                             if (playPromise !== undefined) {{
                                 playPromise.catch(error => {{
-                                    // Fallback to muted if unmuted play failed
+                                    console.error('Initial autoplay failed:', error);
+                                    // Fallback to ensure muted and retry
                                     video.muted = true;
-                                    video.play();
+                                    video.play().catch(e => {{
+                                        console.error('Retry autoplay failed:', e);
+                                    }});
                                 }});
                             }}
+                        }} else {{
+                            console.error('Video element not found');
                         }}
                     }} catch (e) {{
                         console.error('Video autoplay error:', e);
                     }}
-                    "#
+                    return 'set video settings';
+                    "#,
+                    browser,
+                    os
                 );
     
                 match document::eval(&js_code).await {
@@ -93,34 +111,105 @@ fn Home() -> Element {
     }
     );
     
-    let safari_settings = move |_| {
+    let browser_settings = move |_| {
 
         async move  {
             
         let js_code = r#"
-            // Enhanced Safari detection
-            function isSafari() {
-                const ua = navigator.userAgent;
-                const isIOS = /iPad|iPhone|iPod/.test(ua);
-                const isMacSafari = /Macintosh.*Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua);
-                const isNewIPad = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
-                return isIOS || isMacSafari || isNewIPad;
-            }
 
-            const video = this;
-            if (isSafari()) {
-                // Set all required attributes for Safari
-                video.playsInline = true;
-                video.webkitPlaysInline = true;
-                video.setAttribute('playsinline', 'true');
-                video.setAttribute('webkit-playsinline', 'true');
-                video.setAttribute('x-webkit-airplay', 'allow');
-            }
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const language = navigator.language || navigator.userLanguage;
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            const devicePixelRatio = window.devicePixelRatio;
+            const isOnline = navigator.onLine;
+            const cookiesEnabled = navigator.cookieEnabled;
+            
+            // Browser detection
+            let browserName = "Unknown";
+            if (userAgent.includes("Chrome")) browserName = "Chrome";
+            else if (userAgent.includes("Firefox")) browserName = "Firefox";
+            else if (userAgent.includes("Safari")) browserName = "Safari";
+            else if (userAgent.includes("Edge")) browserName = "Edge";
+            else if (userAgent.includes("Opera")) browserName = "Opera";
+
+            // OS detection
+            let os = "Unknown";
+            if (userAgent.includes("Win")) os = "Windows";
+            else if (userAgent.includes("Mac")) os = "MacOS";
+            else if (userAgent.includes("Linux")) os = "Linux";
+            else if (userAgent.includes("Android")) os = "Android";
+            else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) os = "iOS";
+
+            // Device type
+            const isMobile = /Mobile|Android|iPhone|iPad/.test(userAgent);
+            const deviceType = isMobile ? "Mobile" : "Desktop";
+
+            // Create JSON object
+            const deviceInfo = {
+                browser: browserName,
+                operatingSystem: os,
+                deviceType: deviceType,
+                platform: platform,
+                language: language,
+                screenResolution: `${screenWidth}x${screenHeight}`,
+                devicePixelRatio: devicePixelRatio,
+                onlineStatus: isOnline,
+                cookiesEnabled: cookiesEnabled,
+                userAgent: userAgent
+            };
+            console.log(JSON.stringify(deviceInfo));
+            dioxus.send(JSON.stringify(deviceInfo));
         "#;
         
-        match document::eval(&js_code).await {
-            Ok(_) => info!("Video autoplay initiated"),
-            Err(e) => info!("JS eval error: {:?}", e),
+        let resp = document::eval(&js_code).recv().await;
+        match resp {
+            Ok(json_value) => {
+                
+                info!("parsed: {:?}", json_value);
+                // Convert to HashMap
+                // Match json_value, assuming it's a String containing a JSON dictionary
+            match json_value {
+                Value::String(json_str) => {
+                    // Parse the JSON string into a Value
+                    match serde_json::from_str::<Value>(&json_str) {
+                        Ok(parsed_value) => {
+                            // Ensure parsed_value is an object
+                            if let Value::Object(json_map) = parsed_value {
+                                let hash_map: HashMap<String, Value> = json_map.into_iter().collect();
+                                if hash_map.is_empty() {
+                                    info!("HashMap is empty!");
+                                } else {
+                                    info!("Device Info HashMap: {:?}", hash_map);
+                                    // Access specific fields
+                                    if let Some(browser) = hash_map.get("browser") {
+                                        info!("Browser: {}", browser.as_str().unwrap_or("Unknown"));
+                                        browser_signal.set(browser.as_str().unwrap_or("Unknown").to_string());
+                                    }
+                                    if let Some(os) = hash_map.get("operatingSystem") {
+                                        info!("Operating System: {}", os.as_str().unwrap_or("Unknown"));
+                                        os_signal.set(os.as_str().unwrap_or("Unknown").to_string());
+                                    }
+                                }
+                            } else {
+                                info!("Parsed JSON is not an object: {:?}", parsed_value);
+                            }
+                        }
+                        Err(err) => {
+                            info!("Error parsing JSON string: {}", err);
+                        }
+                    }
+                }
+                _ => {
+                    info!("json_value is not a string: {:?}", json_value);
+                }
+
+                }
+            }
+            Err(e) => {
+                info!("JS eval error: {:?}", e);
+            }
         }
 
         }
@@ -157,10 +246,10 @@ fn Home() -> Element {
                         // poster: Uri DEFAULT,
                         // Safari-specific attributes
                         src: WALLPAPER,    
-                        onmounted: safari_settings,
+                        onmounted: browser_settings,
                         oncanplay: move |_| is_video_loaded.set(true),
-                        onstalled: move |_| is_video_loaded.set(false),
-                        onsuspend: move |_| is_video_loaded.set(false),
+                        // onstalled: move |_| is_video_loaded.set(false),
+                        // onsuspend: move |_| is_video_loaded.set(false),
                         
                     }
   
