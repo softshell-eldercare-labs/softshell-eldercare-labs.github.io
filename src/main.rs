@@ -76,15 +76,16 @@ fn Home() -> Element {
                             // Ensure muted and playsinline for Safari
                             video.muted = true;
                             if (browser_name.includes('Safari') || os_name.includes('iOS') || os_name.includes('MacOS')) {{
-                                video.setAttribute('playsinline', 'true');
-                                video.setAttribute('disablepictureinpicture', 'true');
+                                video.setAttribute('playsinline', '');
+                                video.setAttribute('disablepictureinpicture', '');
+                                video.setAttribute('muted', '');
                             }}
                             const playPromise = video.play();
                             if (playPromise !== undefined) {{
                                 playPromise.catch(error => {{
                                     console.error('Initial autoplay failed:', error);
                                     // Fallback to ensure muted and retry
-                                    video.muted = true;
+                                    
                                     video.play().catch(e => {{
                                         console.error('Retry autoplay failed:', e);
                                     }});
@@ -239,8 +240,7 @@ fn Home() -> Element {
                         id: "vbackground",
                         class: "video-background",  // Covers entire section with slight 
                         // autoplay: false,
-                        // controls: false,
-                        // controls: Bool DEFAULT,
+                        controls: true,
                         crossorigin: "anonymous",
                         r#loop: true,
                         muted: true,
