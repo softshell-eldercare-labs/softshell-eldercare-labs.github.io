@@ -73,12 +73,20 @@ fn Home() -> Element {
                     try {{
                         const video = document.getElementById('vbackground');
                         if (video) {{
+                            
+                             const videoSrc = video.querySelector('source')?.src || video.src;
                             // Ensure muted and playsinline for Safari
                             video.muted = true;
                             if (browser_name.includes('Safari') || os_name.includes('iOS') || os_name.includes('MacOS')) {{
                                 video.setAttribute('playsinline', '');
                                 video.setAttribute('disablepictureinpicture', '');
                                 video.setAttribute('muted', '');
+
+                                if (videoSrc) {{
+                                    video.style.backgroundImage = `url("${{videoSrc}}")`;
+                                    video.style.backgroundSize = 'cover';
+                                    video.style.backgroundPosition = 'center';
+                                }}
                             }}
                             const playPromise = video.play();
                             if (playPromise !== undefined) {{
@@ -239,8 +247,8 @@ fn Home() -> Element {
                     video {
                         id: "vbackground",
                         class: "video-background",  // Covers entire section with slight 
-                        // autoplay: false,
-                        controls: true,
+                        autoplay: true,
+                        controls: false,
                         crossorigin: "anonymous",
                         r#loop: true,
                         muted: true,
